@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
@@ -9,10 +11,10 @@ class ServeHandler {
       return Response(200, body: 'Primeira rota');
     });
 
-    // http://localhost:8080/ola/mundo
-    /*router.get('/ola/mundo/<usuario>', (Request request, String usuario) {
+    //http: //localhost:8080/ola/mundo
+    router.get('/ola/mundo/<usuario>', (Request request, String usuario) {
       return Response.ok("Ola Mundo $usuario");
-    });*/
+    });
 
     // http://localhost:8080/query?nome=Luan
     router.get('/query', (Request req) {
@@ -36,6 +38,20 @@ class ServeHandler {
 </body>
 </html>
 ''', headers: {"Content-Type": "text/html"}));
+
+    router.post('/login', (Request req) async {
+      String result = await req.readAsString();
+      Map json = jsonDecode(result);
+
+      var usuario = json['usuario'];
+      var senha = json['senha'];
+
+      if (usuario == 'admin' && senha == '123') {
+        return Response.ok('Bem vindo $usuario');
+      } else {
+        return Response.forbidden('Acesso negado');
+      }
+    });
 
     return router;
   }
